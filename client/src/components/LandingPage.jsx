@@ -82,18 +82,23 @@ export default function LandingPage({ onStart }) {
         Start Reading Free
     </button>
 
-    {/* LEFT FLOATING CARD */}
+    {/* LEFT FLOATING CARD (Extension Download) */}
     <div className="absolute top-24 left-6 hidden lg:block animate-[float_6s_ease-in-out_infinite]">
         <div className="bg-[#FFF8CC] p-5 rounded-xl shadow-md w-64 border border-[#FBE58D]">
-            <p className="text-[#5A4C08] text-sm leading-relaxed">
-                Easily adjust font size, spacing, and use dyslexia-friendly text.
+            <h3 className="font-bold text-[#5A4C08] flex items-center gap-2 mb-2">
+                <Layers size={18} />
+                Get the Extension
+            </h3>
+            <p className="text-[#5A4C08] text-sm leading-relaxed mb-3">
+                Read comfortably everywhere. Download the Lexify Chrome extension.
             </p>
-        </div>
-
-        <div className="absolute -bottom-5 -left-5 bg-white p-3 rounded-xl shadow-md border">
-            <div className="w-8 h-8 bg-[#4A90E2] rounded-lg flex items-center justify-center text-white">
-                <Check size={18} />
-            </div>
+            <a 
+                href="/lexify-extension.zip" 
+                download
+                className="block w-full text-center bg-[#F5A623] hover:bg-[#D08B1E] text-white py-2 rounded-lg font-semibold transition-colors shadow-sm"
+            >
+                Download .zip
+            </a>
         </div>
     </div>
 
