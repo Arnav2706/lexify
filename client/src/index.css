@@ -1,0 +1,54 @@
+@import "tailwindcss";
+@import url('https://cdn.jsdelivr.net/npm/opendyslexic@1.0.3/opendyslexic.css');
+
+.font-lexy {
+  font-family: 'OpenDyslexic', sans-serif !important;
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  .animate-scale-in {
+    animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+  0% { transform: translateY(0px) rotate(-6deg); }
+  50% { transform: translateY(-15px) rotate(-4deg); }
+  100% { transform: translateY(0px) rotate(-6deg); }
+}
+
+@keyframes float_reverse {
+  0% { transform: translateY(0px) rotate(3deg); }
+  50% { transform: translateY(-15px) rotate(5deg); }
+  100% { transform: translateY(0px) rotate(3deg); }
+}
+
+/* Base custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #F8FAFC; 
+}
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1; 
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8; 
+}
