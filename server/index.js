@@ -114,7 +114,7 @@ const clientBuildPath = path.join(__dirname, '../client/dist');
 app.use(express.static(clientBuildPath));
 
 // For any other request, return React's index.html (SPA routing support)
-app.get(/.*/, (req, res) => {
+app.use((req, res) => {
   res.sendFile(path.join(clientBuildPath, 'index.html'));
 });
 
