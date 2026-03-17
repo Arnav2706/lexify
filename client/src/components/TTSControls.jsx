@@ -61,28 +61,46 @@ export default function TTSControls({ text }) {
 
         if (isPlaying) return;
 
-        window.speechSynthesis.cancel(); // clear queue
-        const utterance = new SpeechSynthesisUtterance(text);
+        // BUGFIX for Chrome: cancel() followed immediately by speak() fails silently.
+        window.speechSynthesis.cancel(); 
 
-        if (selectedVoiceURI) {
-            const voice = voices.find(v => v.voiceURI === selectedVoiceURI);
-            if (voice) utterance.voice = voice;
-        }
+        setTimeout(() => {
+            // Split long text into chunks if not in focus mode to prevent the 15-second cutoff bug
+            const matchResult = text.match(/[^.!?]+[.!?]+|\s*$/g) || [];
+            const chunks = matchResult.filter(c => c.trim().length > 0);
+            if (chunks.length === 0) chunks.push(text);
 
-        utterance.rate = speed;
-        utterance.onend = () => {
-            setIsPlaying(false);
+            let chunksCompleted = 0;
+
+            chunks.forEach((chunkText, index) => {
+                const utterance = new SpeechSynthesisUtterance(chunkText);
+
+                if (selectedVoiceURI) {
+                    const voice = voices.find(v => v.voiceURI === selectedVoiceURI);
+                    if (voice) utterance.voice = voice;
+                }
+
+                utterance.rate = speed;
+
+                if (index === chunks.length - 1) {
+                    utterance.onend = () => {
+                        setIsPlaying(false);
+                        setIsPaused(false);
+                    };
+                }
+                
+                utterance.onerror = (e) => {
+                    console.error('TTS Error:', e);
+                    setIsPlaying(false);
+                    setIsPaused(false);
+                };
+
+                window.speechSynthesis.speak(utterance);
+            });
+
+            setIsPlaying(true);
             setIsPaused(false);
-        };
-        utterance.onerror = (e) => {
-            console.error('TTS Error:', e);
-            setIsPlaying(false);
-            setIsPaused(false);
-        };
-
-        window.speechSynthesis.speak(utterance);
-        setIsPlaying(true);
-        setIsPaused(false);
+        }, 50);
     };
 
     const pause = () => {
