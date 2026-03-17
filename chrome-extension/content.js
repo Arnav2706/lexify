@@ -1,11 +1,31 @@
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "GET_SELECTED_TEXT") {
-        sendResponse({ text: window.getSelection().toString() });
+        const selected = window.getSelection().toString().trim();
+        sendResponse({ text: selected });
+        return true;
     }
 
     if (request.action === "GET_PAGE_TEXT") {
-        const paragraphs = Array.from(document.querySelectorAll('p')).map(p => p.textContent);
-        sendResponse({ text: paragraphs.join('\n\n') });
+        // Broad semantic selector to capture content on modern websites
+        const selectors = [
+            'article', 'main', '[role="main"]',
+            'h1', 'h2', 'h3', 'h4',
+            'p', 'li', 'blockquote', 'td'
+        ];
+        const seen = new Set();
+        const lines = [];
+
+        document.querySelectorAll(selectors.join(',')).forEach(el => {
+            const t = el.textContent.trim();
+            // Deduplicate and skip very short snippets (nav links, etc.)
+            if (t.length > 30 && !seen.has(t)) {
+                seen.add(t);
+                lines.push(t);
+            }
+        });
+
+        sendResponse({ text: lines.join('\n\n') });
+        return true;
     }
 
     if (request.action === "SIMPLIFY_PAGE") {

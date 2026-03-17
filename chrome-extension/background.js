@@ -1,3 +1,9 @@
+// ── Configuration ─────────────────────────────────────────────────────────
+// Change this to your Render production URL when deploying, e.g:
+// const BASE_URL = "https://your-app.onrender.com";
+const BASE_URL = "http://localhost:5000";
+// ──────────────────────────────────────────────────────────────────────────
+
 chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
         id: "simplifyWithLexify",
@@ -9,7 +15,7 @@ chrome.runtime.onInstalled.addListener(() => {
 // Central fetcher in background script to bypass PNA/CORS restrictions in popup/content scripts
 async function fetchSimplification(text, mode = 'simplified') {
     try {
-        const resp = await fetch("http://127.0.0.1:5001/api/simplify", {
+        const resp = await fetch(`${BASE_URL}/api/simplify`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ text, mode })
@@ -19,7 +25,7 @@ async function fetchSimplification(text, mode = 'simplified') {
         try {
             data = await resp.json();
         } catch(e) {
-            throw new Error("Invalid response from server. Is the backend running?");
+            throw new Error("Invalid response from server. Is the backend running on port 5000?");
         }
         
         if (!resp.ok) throw new Error(data.error || "Server error");

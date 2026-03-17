@@ -18,24 +18,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Open Landing Page on logo click
     logo.addEventListener('click', () => {
-        chrome.tabs.create({ url: 'http://localhost:5173' });
+        chrome.tabs.create({ url: 'http://localhost:5000' });
     });
 
     // Auto-scan page text on popup open
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        if (tabs[0]) {
-            chrome.tabs.sendMessage(tabs[0].id, { action: "GET_SELECTED_TEXT" }, (selResponse) => {
-                if (selResponse && selResponse.text && selResponse.text.trim()) {
-                    inputText.value = selResponse.text;
-                } else {
-                    chrome.tabs.sendMessage(tabs[0].id, { action: "GET_PAGE_TEXT" }, (pageResponse) => {
-                        if (pageResponse && pageResponse.text) {
-                            inputText.value = pageResponse.text.substring(0, 1000); // Sample first 1000 chars
-                        }
-                    });
-                }
-            });
+        if (!tabs[0]) return;
+
+        // Guard against chrome:// pages where content scripts can't run
+        const url = tabs[0].url || '';
+        if (url.startsWith('chrome://') || url.startsWith('chrome-extension://') || url.startsWith('about:')) {
+            inputText.placeholder = '⚠️ Cannot scan browser internal pages. Paste your text here manually.';
+            return;
         }
+
+        chrome.tabs.sendMessage(tabs[0].id, { action: "GET_SELECTED_TEXT" }, (selResponse) => {
+            if (chrome.runtime.lastError) {
+                // Content script not injected yet on this page
+                inputText.placeholder = '📋 Could not auto-scan this page. Try reloading it, or paste your text here.';
+                return;
+            }
+
+            if (selResponse && selResponse.text && selResponse.text.trim().length > 10) {
+                inputText.value = selResponse.text.trim();
+                inputText.placeholder = '';
+            } else {
+                // No selection — try full-page scan
+                chrome.tabs.sendMessage(tabs[0].id, { action: "GET_PAGE_TEXT" }, (pageResponse) => {
+                    if (chrome.runtime.lastError || !pageResponse || !pageResponse.text.trim()) {
+                        inputText.placeholder = '📋 No text detected on this page. Paste your text here to simplify it.';
+                        return;
+                    }
+                    // Limit to first 1500 chars for a reasonable default
+                    inputText.value = pageResponse.text.substring(0, 1500).trim();
+                    inputText.placeholder = '';
+                });
+            }
+        });
     });
 
     // Font Size Slider
