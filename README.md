@@ -150,7 +150,7 @@ Lexify is configured for seamless deployment on **Render**.
 
 > ⚠️ **Important**: The `.env` file is excluded from Git for security. You **must** add your `GEMINI_API_KEY` manually in the Render dashboard under **Environment → Environment Variables**.
 
----
+----
 
 ## Tech Stack
 
