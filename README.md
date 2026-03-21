@@ -179,7 +179,7 @@ From the **root directory**:
 | `npm run build` | Build the React frontend for production |
 | `npm start` | Run the production Express server (serves built frontend) |
 
----
+----
 
 ## License
 
